@@ -79,7 +79,7 @@ This will force `citeease-cli` to treat the first identifier as a URL and the se
 
 ---
 
-## ⚙️ Configuration
+## 🔧 Configuration
 
 `citeease-cli` allows you to configure default settings for citation generation using the `config` command. This helps you avoid repeating options like style, locale, or format with every command.
 
@@ -108,8 +108,6 @@ cite config reset
 
 Use the `config <KEY>` command without a value to view the current setting for a key.
 
----
-
 ## 🆔 Supported Identifiers
 
 -   **DOI**: e.g., `10.1093/ajae/aaq063`
@@ -117,8 +115,6 @@ Use the `config <KEY>` command without a value to view the current setting for a
 -   **ISBN**: e.g., `978-3-16-148410-0`
 -   **PMID**: e.g., `27097605`
 -   **PMCID**: e.g., `PMC6323133`
-
----
 
 ## 🌐 Data Sources
 
@@ -130,19 +126,13 @@ Use the `config <KEY>` command without a value to view the current setting for a
 
 These APIs provide open-access data for research and citation.
 
----
-
 ## 📄 Output
 
 `citeease-cli` generates a formatted citation (reference) for each identifier. The output is styled for easy copy-pasting into documents and includes all relevant citation details, formatted according to standard citation styles, locale settings, and output format.
 
----
-
 ## 📜 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
 
 ## 📧 Contact
 

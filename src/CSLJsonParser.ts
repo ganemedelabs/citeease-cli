@@ -453,40 +453,42 @@ class CSLJsonParser {
     /**
      * Generates a formatted bibliography from the CSL-JSON data.
      * @param {ToBibliographyOptions} options - The style, locale, and format for formatting.
-     * @returns {string | null} The formatted bibliography string or null if an error occurs.
+     * @returns {Promise<string | null>} A promise that resolves to the formatted bibliography string or null if an error occurs.
      */
-    public toBibliography(options: ToBibliographyOptions): string | null {
-        const { style = "apa", locale = "en-US", format = "text" } = options;
+    public async toBibliography(options: ToBibliographyOptions): Promise<string | null> {
+        return new Promise((resolve) => {
+            try {
+                const { style = "apa", locale = "en-US", format = "text" } = options;
 
-        try {
-            const citations: Record<string, CSLJson> = {};
-            const itemIDs: string[] = [];
-            for (let i = 0, length = this.cslJson.length; i < length; i += 1) {
-                const item = this.cslJson[i];
-                const id = item.id;
-                citations[id] = item;
-                itemIDs.push(id);
+                const citations: Record<string, CSLJson> = {};
+                const itemIDs: string[] = [];
+                for (let i = 0, length = this.cslJson.length; i < length; i += 1) {
+                    const item = this.cslJson[i];
+                    const id = item.id;
+                    citations[id] = item;
+                    itemIDs.push(id);
+                }
+
+                const processorFunctions = {
+                    retrieveLocale: () => this.getLocaleFile(locale),
+                    retrieveItem: (id: string) => citations[id],
+                };
+
+                const getFormattedCitations = (): string => {
+                    const cslFile = this.getCslFile(style);
+                    const citeproc = new Citeproc.Engine(processorFunctions, cslFile);
+                    citeproc.setOutputFormat(format.toLowerCase());
+                    citeproc.updateItems(itemIDs);
+                    const references = citeproc.makeBibliography();
+                    return references[1].join(format.toLowerCase() === "rtf" ? "\n" : "");
+                };
+
+                resolve(getFormattedCitations());
+            } catch (error) {
+                if (this.options.logErrors) process.stderr.write(this.errorTemplate(error as Error));
+                resolve(null);
             }
-
-            const processorFunctions = {
-                retrieveLocale: () => this.getLocaleFile(locale),
-                retrieveItem: (id: string) => citations[id],
-            };
-
-            const getFormattedCitations = (): string => {
-                const cslFile = this.getCslFile(style);
-                const citeproc = new Citeproc.Engine(processorFunctions, cslFile);
-                citeproc.setOutputFormat(format.toLowerCase());
-                citeproc.updateItems(itemIDs);
-                const references = citeproc.makeBibliography();
-                return references[1].join(format.toLowerCase() === "rtf" ? "\n" : "");
-            };
-
-            return getFormattedCitations();
-        } catch (error) {
-            if (this.options.logErrors) process.stderr.write(this.errorTemplate(error as Error));
-            return null;
-        }
+        });
     }
 }
 
