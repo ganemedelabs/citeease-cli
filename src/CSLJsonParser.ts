@@ -387,9 +387,10 @@ class CSLJsonParser {
                     accessed: this.createDateObject(new Date()),
                     author: data?.author,
                 };
+
+                this.cslJson.push(newCslJsonObject);
             }
 
-            this.cslJson.push(newCslJsonObject);
             return newCslJsonObject;
             /* eslint-enable indent */
         } catch (error) {
@@ -439,9 +440,10 @@ class CSLJsonParser {
                     accessed: this.createDateObject(new Date()),
                     author: data?.author,
                 };
+
+                this.cslJson.push(newCslJsonObject);
             }
 
-            this.cslJson.push(newCslJsonObject);
             return newCslJsonObject;
             /* eslint-enable indent */
         } catch (error) {
