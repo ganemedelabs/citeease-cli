@@ -1,0 +1,73 @@
+{
+    "name": "citeease-cli",
+    "version": "1.0.0",
+    "description": "citeease-cli is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
+    "private": false,
+    "bin": {
+        "citeease-cli": "dist/citeease-cli.js",
+        "cite": "dist/index.js"
+    },
+    "types": "dist/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ganymedelabs/citeease-cli.git"
+    },
+    "author": "ganymedelabs",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ganymedelabs/citeease-cli/issues"
+    },
+    "homepage": "https://github.com/ganymedelabs/citeease-cli#readme",
+    "keywords": [
+        "citation",
+        "reference",
+        "references",
+        "bibliography",
+        "doi",
+        "isbn",
+        "pmid",
+        "pmcid",
+        "url",
+        "citation-generator",
+        "cli-tool",
+        "command-line",
+        "bibliography-generator",
+        "academic",
+        "research",
+        "csl",
+        "citation-style-language"
+    ],
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "ts-node src/index.ts",
+        "start": "node dist/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "lint": "eslint .",
+        "lint:fix": "eslint --fix .",
+        "format": "prettier --write \"./**/*.{js,ts,json}\""
+    },
+    "dependencies": {
+        "citeproc": "^2.4.63",
+        "jsdom": "^25.0.1",
+        "xmlhttprequest": "^1.8.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.6.0",
+        "@types/node": "^22.9.0",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-prettier": "^5.1.3",
+        "prettier": "^3.3.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.3"
+    }
+}
