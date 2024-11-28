@@ -453,11 +453,11 @@ class CSLJsonParser {
     }
 
     /**
-     * Generates a formatted bibliography from the CSL-JSON data.
+     * Generates a formatted bibliography citation from the CSL-JSON data.
      * @param {ToBibliographyOptions} options - The style, locale, and format for formatting.
-     * @returns {Promise<string | null>} A promise that resolves to the formatted bibliography string or null if an error occurs.
+     * @returns {Promise<[string, string] | [null, null]>} A promise that resolves to the formatted bibliography strings or [null, null] if an error occurs.
      */
-    public async toBibliography(options: ToBibliographyOptions): Promise<string | null> {
+    public async toBibliography(options: ToBibliographyOptions): Promise<[string, string] | [null, null]> {
         return new Promise((resolve) => {
             try {
                 const { style = "apa", locale = "en-US", format = "text" } = options;
@@ -476,19 +476,34 @@ class CSLJsonParser {
                     retrieveItem: (id: string) => citations[id],
                 };
 
-                const getFormattedCitations = (): string => {
+                const intextConfig = {
+                    properties: {
+                        noteIndex: 0,
+                    },
+                    citationItems: itemIDs.map((id) => {
+                        const targetCitation = processorFunctions.retrieveItem(id);
+                        return {
+                            id,
+                            locator: targetCitation?.locator,
+                            label: targetCitation?.label,
+                        };
+                    }),
+                };
+
+                const getFormattedCitations = (): [string, string] => {
                     const cslFile = this.getCslFile(style);
                     const citeproc = new Citeproc.Engine(processorFunctions, cslFile);
                     citeproc.setOutputFormat(format.toLowerCase());
                     citeproc.updateItems(itemIDs);
                     const references = citeproc.makeBibliography();
-                    return references[1].join(format.toLowerCase() === "rtf" ? "\n" : "");
+                    const intext = citeproc.previewCitationCluster(intextConfig, [], [], format);
+                    return [references[1].join(format.toLowerCase() === "rtf" ? "\n" : ""), intext];
                 };
 
                 resolve(getFormattedCitations());
             } catch (error) {
                 if (this.options.logErrors) process.stderr.write(this.errorTemplate(error as Error));
-                resolve(null);
+                resolve([null, null]);
             }
         });
     }

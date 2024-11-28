@@ -6,6 +6,7 @@ const FONT = {
     YELLOW: "\x1b[38;5;228m",
     BLUE: "\x1b[38;5;33m",
     RED: "\x1b[38;5;197m",
+    GRAY: "\x1b[38;5;249m",
     BLACK: "\x1b[38;5;0m",
     BG_GREEN: "\x1b[48;5;48m",
     BG_RED: "\x1b[48;5;9m",
@@ -35,6 +36,8 @@ const HELP_MESSAGE = `
           --style, -s <style>    Set the citation style (e.g., apa, modern-language-association, chicago-author-date)
           --locale, -l <locale>  Set the locale for the output (e.g., en-US, fr-FR, ar)
           --format, -f <format>  Set the output format (e.g., text, html, rtf, asciidoc). Default is "text".
+          --intext, -i           Include in-text citations in the output (e.g., "(Author, Year)").
+          --no-intext            Exclude in-text citations from the output.
           --log-errors, -e       Enable logging of errors for debugging purposes
           --version, -v          Display the current version of citeease-cli
           config <key> [value]   Configure default settings. Keys: "style", "locale", "format", or "reset".
@@ -42,14 +45,16 @@ const HELP_MESSAGE = `
         Examples:
 
           cite identifier1 identifier2 identifier3 --locale ar --format html
-          cite id1 id2 -s chicago-author-date -e -f rtf
-          cite identifier --locale fr-FR
+          cite id1 id2 -s chicago-author-date -e -f rtf -i
+          cite identifier --locale fr-FR --intext
           cite config style ieee      # Set default citation style to IEEE
           cite config locale es-MX   # Set default locale to es-MX (Spanish - Mexico)
           cite config reset          # Reset all configurations to defaults
 
         Notes:
 
+          - By default, "intext" is set to false, meaning in-text citations are not included unless explicitly enabled with "--intext".
+          - Use "--no-intext" only when the "intext" configuration is set to true and you wish to override it.
           - Identifiers are processed in the order provided.
           - Use "--log-errors" to output errors for troubleshooting.
           - The "config" command allows you to set default configurations or reset them.

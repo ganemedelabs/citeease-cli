@@ -40,6 +40,8 @@ To generate citations, provide a list of unique identifiers as arguments. `citee
 -   `--style`, `-s <style>`: Choose the citation style for the output (e.g., `apa`, `modern-language-association`, `chicago-author-date`). The default is APA.
 -   `--locale`, `-l <locale>`: Set the locale for the citation language (e.g., `en-US` for U.S. English, `fr-FR` for French, `ar` for Arabic). The default is `en-US`.
 -   `--format`, `-f <format>`: Specify the output format. Options include `text` (default), `html`, `rtf`, and `asciidoc`.
+-   `--intext`, `-i`: Include in-text citations (e.g., `(Author, Year)`) in the output. By default, in-text citations are disabled.
+-   `--no-intext`: Exclude in-text citations from the output. This option is only necessary if the `intext` configuration is set to `true` by default.
 -   `--log-errors`, `-e`: Enable logging of errors for debugging purposes.
 -   `--version`, `-v`: Display the current version of `citeease-cli`.
 
@@ -56,6 +58,12 @@ cite 10.1000/xyz123 978-3-16-148410-0
 
 # Specifying a citation style and locale
 cite --style modern-language-association --locale en-GB 10.1000/xyz123
+
+# Including in-text citations
+cite --intext 10.1000/xyz123
+
+# Excluding in-text citations when enabled by default
+cite --no-intext 10.1000/xyz123
 
 # Specifying an output format
 cite --format html 10.1000/xyz123
@@ -81,13 +89,14 @@ This will force `citeease-cli` to treat the first identifier as a URL and the se
 
 ## 🔧 Configuration
 
-`citeease-cli` allows you to configure default settings for citation generation using the `config` command. This helps you avoid repeating options like style, locale, or format with every command.
+`citeease-cli` allows you to configure default settings for citation generation using the `config` command. This helps you avoid repeating options like style, locale, format, or in-text citations with every command.
 
 ### Configuration Options
 
 -   **`style`**: Set the default citation style (e.g., `apa`, `mla`, `chicago-author-date`).
 -   **`locale`**: Set the default locale (e.g., `en-US`, `fr-FR`, `ar`).
 -   **`format`**: Set the default output format (e.g., `text`, `HTML`, `rtf`, `asciidoc`).
+-   **`intext`**: Enable or disable in-text citations by default. The default value is `false`.
 -   **`reset`**: Reset all configurations to their default values.
 
 ### Examples
@@ -101,6 +110,9 @@ cite config locale en-US
 
 # Set default output format to HTML
 cite config format html
+
+# Enable in-text citations by default
+cite config intext true
 
 # Reset all configurations
 cite config reset

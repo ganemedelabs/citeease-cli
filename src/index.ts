@@ -15,6 +15,7 @@ type ParsedArguments = {
     style: string;
     locale: string;
     format: string;
+    showIntext: boolean;
     logErrors: boolean;
     showVersion: boolean;
 };
@@ -127,10 +128,10 @@ function handleConfig(): void {
         process.exit(1);
     }
 
-    const validKeys = /^(style|locale|format|reset)$/;
+    const validKeys = /^(style|locale|format|intext|reset)$/;
     if (!validKeys.test(key)) {
         process.stderr.write(
-            `${FONT.RED}Invalid key. Allowed keys are "style", "locale", "format", or "reset".${FONT.RESET}\n\n`
+            `${FONT.RED}Invalid key. Allowed keys are "style", "locale", "format", "intext", or "reset".${FONT.RESET}\n\n`
         );
         process.exit(1);
     }
@@ -176,6 +177,7 @@ function parseArguments(args: string[]): ParsedArguments {
     let style = config.style || "apa";
     let locale = config.locale || "en-US";
     let format = config.format || "text";
+    let showIntext = config.intext === "true" || false;
     let logErrors = false;
     let showVersion = false;
 
@@ -185,6 +187,8 @@ function parseArguments(args: string[]): ParsedArguments {
         style: /^-{1,2}s(tyle)?$/,
         locale: /^-{1,2}l(ocale)?$/,
         format: /^-{1,2}f(ormat)?$/,
+        showIntext: /^-{1,2}i(ntext)?$/,
+        dontShowIntext: /^-{1,2}no-intext$/,
     };
 
     for (let i = 0; i < args.length; i++) {
@@ -192,6 +196,10 @@ function parseArguments(args: string[]): ParsedArguments {
             showVersion = true;
         } else if (regexes.logErrors.test(args[i])) {
             logErrors = true;
+        } else if (regexes.showIntext.test(args[i])) {
+            showIntext = true;
+        } else if (regexes.dontShowIntext.test(args[i])) {
+            showIntext = false;
         } else if (regexes.style.test(args[i]) && args[i + 1]) {
             style = args[i + 1];
             i++;
@@ -206,7 +214,7 @@ function parseArguments(args: string[]): ParsedArguments {
         }
     }
 
-    return { identifiers, style, locale, format, logErrors, showVersion };
+    return { identifiers, style, locale, format, showIntext, logErrors, showVersion };
 }
 
 /**
@@ -282,13 +290,15 @@ function displayIdentifiers(identifiers: Array<[IdentifierType, string]>, messag
  */
 async function formatBibliography(
     content: CSLJson[],
-    options: { style: string; locale: string; format: string; logErrors: boolean }
+    options: { style: string; locale: string; format: string; showIntext: boolean; logErrors: boolean }
 ): Promise<string | null> {
-    const { style, locale, format, logErrors } = options;
+    const { style, locale, format, showIntext, logErrors } = options;
     const parser = new CSLJsonParser(content, { logErrors });
-    const references = await parser.toBibliography({ style, locale, format });
+    const [references, intext] = await parser.toBibliography({ style, locale, format });
+
     return references
-        ? `${RESULT.SUCCESS} ${FONT.GREEN}Successfully generated references:${FONT.RESET}\n${references}\n`
+        ? `${RESULT.SUCCESS} ${FONT.GREEN}Successfully generated references:${FONT.RESET}\n` +
+              `${showIntext ? `\r${FONT.GRAY}Reference list entries:${FONT.RESET}\n${references}\n\r${FONT.GRAY}In-text citation:${FONT.RESET}\n${intext}\n` : references}\n`
         : null;
 }
 
@@ -298,7 +308,9 @@ async function formatBibliography(
  * @returns {Promise<boolean | undefined>} - A promise that resolves when the script completes.
  */
 async function main(): Promise<boolean | undefined> {
-    const { identifiers, style, locale, format, logErrors, showVersion } = parseArguments(process.argv.slice(2));
+    const { identifiers, style, locale, format, showIntext, logErrors, showVersion } = parseArguments(
+        process.argv.slice(2)
+    );
 
     if (showVersion) return process.stdout.write(`${pkg.version}\n`);
     if (!identifiers.length) return process.stdout.write(HELP_MESSAGE);
@@ -338,7 +350,7 @@ async function main(): Promise<boolean | undefined> {
     }
 
     if (successful.length) {
-        const bibliography = await formatBibliography(successful, { style, locale, format, logErrors });
+        const bibliography = await formatBibliography(successful, { style, locale, format, showIntext, logErrors });
         bibliography
             ? process.stdout.write(bibliography)
             : process.stdout.write(`${RESULT.FAIL} ${FONT.RED}Failed to format references!${FONT.RESET}\n\n`);
