@@ -278,15 +278,15 @@ function displayIdentifiers(identifiers: Array<[IdentifierType, string]>, messag
  * Formats CSL-JSON content into a bibliography using a specified style, locale, and format.
  * @param {CSLJson[]} content - The CSL-JSON content to format.
  * @param {string} options - The options for formatting.
- * @returns {string | null} - The formatted bibliography or null if formatting fails.
+ * @returns {Promise<string | null>} - The formatted bibliography or null if formatting fails.
  */
-function formatBibliography(
+async function formatBibliography(
     content: CSLJson[],
     options: { style: string; locale: string; format: string; logErrors: boolean }
-): string | null {
+): Promise<string | null> {
     const { style, locale, format, logErrors } = options;
     const parser = new CSLJsonParser(content, { logErrors });
-    const references = parser.toBibliography({ style, locale, format });
+    const references = await parser.toBibliography({ style, locale, format });
     return references
         ? `${RESULT.SUCCESS} ${FONT.GREEN}Successfully generated references:${FONT.RESET}\n${references}\n`
         : null;
@@ -338,7 +338,7 @@ async function main(): Promise<boolean | undefined> {
     }
 
     if (successful.length) {
-        const bibliography = formatBibliography(successful, { style, locale, format, logErrors });
+        const bibliography = await formatBibliography(successful, { style, locale, format, logErrors });
         bibliography
             ? process.stdout.write(bibliography)
             : process.stdout.write(`${RESULT.FAIL} ${FONT.RED}Failed to format references!${FONT.RESET}\n\n`);
