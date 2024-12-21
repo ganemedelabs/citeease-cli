@@ -1,7 +1,7 @@
 # CiteEase CLI
 
-![npm](https://img.shields.io/npm/v/citeease-cli)  
-![npm](https://img.shields.io/npm/dw/citeease-cli)  
+![npm](https://img.shields.io/npm/v/citeease-cli)
+![npm](https://img.shields.io/npm/dw/citeease-cli)
 ![License](https://img.shields.io/npm/l/citeease-cli)
 
 `citeease-cli` is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID. Just pass in your identifiers, and `citeease-cli` will handle the rest!
