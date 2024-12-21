@@ -1,6 +1,6 @@
 {
     "name": "citeease-cli",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "citeease-cli is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
     "private": false,
     "bin": {
@@ -10,14 +10,14 @@
     "types": "dist/index.d.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ganymedelabs/citeease-cli.git"
+        "url": "https://github.com/ganemedelabs/citeease-cli.git"
     },
-    "author": "ganymedelabs",
+    "author": "ganemedelabs",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/ganymedelabs/citeease-cli/issues"
+        "url": "https://github.com/ganemedelabs/citeease-cli/issues"
     },
-    "homepage": "https://github.com/ganymedelabs/citeease-cli#readme",
+    "homepage": "https://github.com/ganemedelabs/citeease-cli#readme",
     "keywords": [
         "citation",
         "reference",
