@@ -1,10 +1,11 @@
 import { type CSLJson, type CSLJsonResponse, type DateObject } from "./types"; // eslint-disable-line import/no-unresolved
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Citeproc from "citeproc";
 import { XMLHttpRequest } from "xmlhttprequest";
 import { JSDOM } from "jsdom";
-import { FONT, RESULT, uid } from "./common";
+import { FONT, RESULT, uid } from "./common"; // eslint-disable-line import/no-unresolved
 
 type Options = {
     logErrors: boolean;
