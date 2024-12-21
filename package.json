@@ -1,6 +1,6 @@
 {
     "name": "citeease-cli",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "citeease-cli is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
     "private": false,
     "bin": {
@@ -58,11 +58,14 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
+        "@eslint/compat": "^1.2.4",
         "@eslint/js": "^9.6.0",
+        "@types/jsdom": "^21.1.7",
         "@types/node": "^22.9.0",
-        "@typescript-eslint/eslint-plugin": "^7.18.0",
-        "@typescript-eslint/parser": "^7.18.0",
-        "eslint": "^8.57.0",
+        "@types/xmlhttprequest": "^1.8.2",
+        "@typescript-eslint/eslint-plugin": "^8.18.1",
+        "@typescript-eslint/parser": "^8.18.1",
+        "eslint": "^9.17.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-prettier": "^5.1.3",

@@ -1,6 +1,6 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
-const FONT = {
+export const FONT = {
     BOLD: "\x1b[1m",
     GREEN: "\x1b[38;5;48m",
     YELLOW: "\x1b[38;5;228m",
@@ -13,13 +13,13 @@ const FONT = {
     RESET: "\x1b[0m",
 };
 
-const RESULT = {
+export const RESULT = {
     SUCCESS: `${FONT.BG_GREEN}${FONT.BOLD}${FONT.BLACK} SUCCESS ${FONT.RESET}`,
     FAIL: `${FONT.BG_RED}${FONT.BOLD}${FONT.BLACK} FAIL ${FONT.RESET}`,
     ERROR: `${FONT.BG_RED}${FONT.BOLD}${FONT.BLACK} ERROR ${FONT.RESET}`,
 };
 
-const HELP_MESSAGE = `
+export const HELP_MESSAGE = `
         Usage:
 
           cite <list of identifiers> [options]
@@ -40,6 +40,7 @@ const HELP_MESSAGE = `
           --no-intext            Exclude in-text citations from the output.
           --log-errors, -e       Enable logging of errors for debugging purposes
           --version, -v          Display the current version of citeease-cli
+          help                   Show help message
           config <key> [value]   Configure default settings. Keys: "style", "locale", "format", or "reset".
 
         Examples:
@@ -73,7 +74,7 @@ const HELP_MESSAGE = `
  * @param {number} [length=16] - The desired length of the unique ID.
  * @returns {string} A unique identifier of the specified length.
  */
-function uid(length: number = 16): string {
+export function uid(length: number = 16): string {
     if (length <= 0) {
         throw new Error("Length must be a positive number");
     }
@@ -88,5 +89,3 @@ function uid(length: number = 16): string {
 
     return result;
 }
-
-module.exports = { FONT, RESULT, HELP_MESSAGE, uid };

@@ -2,28 +2,29 @@
 
 import { CSLJson, type CSLJsonResponse } from "./types"; // eslint-disable-line import/no-unresolved
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
+import fs from "fs";
+import path from "path";
+import os from "os";
 
-const CSLJsonParser = require("./CSLJsonParser");
-const pkg = require("../package.json");
-const { FONT, RESULT, HELP_MESSAGE } = require("./common");
+import { FONT, RESULT, HELP_MESSAGE } from "./common";
 
 type ParsedArguments = {
     identifiers: string[];
     style: string;
     locale: string;
-    format: string;
+    format: BibliographyFormat;
     showIntext: boolean;
     logErrors: boolean;
-    showVersion: boolean;
 };
 
 type IdentifierType = "URL" | "DOI" | "PMCID" | "PMID" | "ISBN" | "undefined";
 
+type BibliographyFormat = "text" | "html" | "rtf" | "asciidoc";
+
 const configDir = path.join(os.homedir(), ".citease-cli");
 const configFile = path.join(configDir, "config.json");
+
+let cachedConfig: Record<string, string> | null = null;
 
 /**
  * Ensures the configuration directory exists and retrieves the configuration from the file.
@@ -32,13 +33,12 @@ const configFile = path.join(configDir, "config.json");
  * @returns {Record<string, string>} The configuration as a key-value object.
  */
 function getConfigFile(): Record<string, string> {
-    if (!fs.existsSync(configDir)) {
-        fs.mkdirSync(configDir, { recursive: true });
-    }
-
+    if (cachedConfig) return cachedConfig;
+    if (!fs.existsSync(configDir)) fs.mkdirSync(configDir, { recursive: true });
     if (fs.existsSync(configFile)) {
         try {
-            return JSON.parse(fs.readFileSync(configFile, "utf-8"));
+            cachedConfig = JSON.parse(fs.readFileSync(configFile, "utf-8"));
+            return cachedConfig as Record<string, string>;
         } catch (error) {
             process.stderr.write(
                 `${RESULT.ERROR} ${FONT.RED}Failed to parse configuration file: ${error}${FONT.RESET}\n\n`
@@ -46,8 +46,8 @@ function getConfigFile(): Record<string, string> {
             process.exit(1);
         }
     }
-
-    return {};
+    cachedConfig = {};
+    return cachedConfig;
 }
 
 /**
@@ -176,13 +176,11 @@ function parseArguments(args: string[]): ParsedArguments {
     const identifiers: string[] = [];
     let style = config.style || "apa";
     let locale = config.locale || "en-US";
-    let format = config.format || "text";
+    let format = (config.format as BibliographyFormat) || "text";
     let showIntext = config.intext === "true" || false;
     let logErrors = false;
-    let showVersion = false;
 
     const regexes = {
-        showVersion: /^-{1,2}v(ersion)?$/,
         logErrors: /^-{1,2}e(rrors)?$/,
         style: /^-{1,2}s(tyle)?$/,
         locale: /^-{1,2}l(ocale)?$/,
@@ -192,9 +190,7 @@ function parseArguments(args: string[]): ParsedArguments {
     };
 
     for (let i = 0; i < args.length; i++) {
-        if (regexes.showVersion.test(args[i])) {
-            showVersion = true;
-        } else if (regexes.logErrors.test(args[i])) {
+        if (regexes.logErrors.test(args[i])) {
             logErrors = true;
         } else if (regexes.showIntext.test(args[i])) {
             showIntext = true;
@@ -207,14 +203,14 @@ function parseArguments(args: string[]): ParsedArguments {
             locale = args[i + 1];
             i++;
         } else if (regexes.format.test(args[i]) && args[i + 1]) {
-            format = args[i + 1];
+            format = args[i + 1] as BibliographyFormat;
             i++;
         } else if (!args[i].startsWith("-")) {
             identifiers.push(args[i].replace("\\-", "-"));
         }
     }
 
-    return { identifiers, style, locale, format, showIntext, logErrors, showVersion };
+    return { identifiers, style, locale, format, showIntext, logErrors };
 }
 
 /**
@@ -256,6 +252,7 @@ async function retrieveContent(
     identifiers: [IdentifierType, string][],
     logErrors: boolean
 ): Promise<CSLJsonResponse[]> {
+    const CSLJsonParser = (await import("./CSLJsonParser")).default;
     const parser = new CSLJsonParser([], { logErrors });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-unused-vars
     const fetchers: Record<IdentifierType, (id: string) => Promise<any>> = {
@@ -290,9 +287,16 @@ function displayIdentifiers(identifiers: Array<[IdentifierType, string]>, messag
  */
 async function formatBibliography(
     content: CSLJson[],
-    options: { style: string; locale: string; format: string; showIntext: boolean; logErrors: boolean }
+    options: {
+        style: string;
+        locale: string;
+        format: BibliographyFormat;
+        showIntext: boolean;
+        logErrors: boolean;
+    }
 ): Promise<string | null> {
     const { style, locale, format, showIntext, logErrors } = options;
+    const CSLJsonParser = (await import("./CSLJsonParser")).default;
     const parser = new CSLJsonParser(content, { logErrors });
     const [references, intext] = await parser.toBibliography({ style, locale, format });
 
@@ -307,13 +311,19 @@ async function formatBibliography(
  * Parses arguments, retrieves content, formats bibliography, and displays results.
  * @returns {Promise<boolean | undefined>} - A promise that resolves when the script completes.
  */
-async function main(): Promise<boolean | undefined> {
-    const { identifiers, style, locale, format, showIntext, logErrors, showVersion } = parseArguments(
-        process.argv.slice(2)
-    );
+async function main(): Promise<void> {
+    if (process.argv.slice(2).length === 0 || /^-{0,2}h(elp)?$/.test(process.argv[2])) {
+        process.stdout.write(HELP_MESSAGE);
+        process.exit(0);
+    }
 
-    if (showVersion) return process.stdout.write(`${pkg.version}\n`);
-    if (!identifiers.length) return process.stdout.write(HELP_MESSAGE);
+    if (/^-{1,2}v(ersion)?$/.test(process.argv[2])) {
+        const pkg = (await import("../package.json")).default;
+        process.stdout.write(`${pkg.version}\n`);
+        process.exit(0);
+    }
+
+    const { identifiers, style, locale, format, showIntext, logErrors } = parseArguments(process.argv.slice(2));
 
     const parsedIdentifiers = identifiers.map(recognizeIdentifierType);
     const [definedIdentifiers, undefinedIdentifiers] = parsedIdentifiers.reduce(
@@ -323,7 +333,7 @@ async function main(): Promise<boolean | undefined> {
     );
 
     if (undefinedIdentifiers.length) displayIdentifiers(undefinedIdentifiers, "Unable to determine the type", FONT.RED);
-    if (!definedIdentifiers.length) return;
+    if (!definedIdentifiers.length) process.exit(0);
 
     displayIdentifiers(definedIdentifiers, "Retrieving data", FONT.BLUE);
 

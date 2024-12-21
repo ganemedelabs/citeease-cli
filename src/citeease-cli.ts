@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const { HELP_MESSAGE } = require("./common");
+import { HELP_MESSAGE } from "./common";
 
 process.stdout.write(HELP_MESSAGE);

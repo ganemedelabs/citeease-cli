@@ -1,9 +1,10 @@
 import { type CSLJson, type CSLJsonResponse, type DateObject } from "./types"; // eslint-disable-line import/no-unresolved
 
-const Citeproc = require("citeproc");
-const { XMLHttpRequest } = require("xmlhttprequest");
-const { JSDOM } = require("jsdom");
-const { FONT, RESULT, uid } = require("./common");
+// @ts-ignore
+import Citeproc from "citeproc";
+import { XMLHttpRequest } from "xmlhttprequest";
+import { JSDOM } from "jsdom";
+import { FONT, RESULT, uid } from "./common";
 
 type Options = {
     logErrors: boolean;
@@ -509,4 +510,4 @@ class CSLJsonParser {
     }
 }
 
-module.exports = CSLJsonParser;
+export default CSLJsonParser;
