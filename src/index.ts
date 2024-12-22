@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
-import { FONT, RESULT, HELP_MESSAGE } from "./common";
+import { FONT, RESULT, HELP_MESSAGE } from "./common"; // eslint-disable-line import/no-unresolved
 
 type ParsedArguments = {
     identifiers: string[];
@@ -252,7 +252,7 @@ async function retrieveContent(
     identifiers: [IdentifierType, string][],
     logErrors: boolean
 ): Promise<CSLJsonResponse[]> {
-    const CSLJsonParser = (await import("./CSLJsonParser")).default;
+    const CSLJsonParser = (await import("./CSLJsonParser")).default; // eslint-disable-line import/no-unresolved
     const parser = new CSLJsonParser([], { logErrors });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-unused-vars
     const fetchers: Record<IdentifierType, (id: string) => Promise<any>> = {
@@ -296,7 +296,7 @@ async function formatBibliography(
     }
 ): Promise<string | null> {
     const { style, locale, format, showIntext, logErrors } = options;
-    const CSLJsonParser = (await import("./CSLJsonParser")).default;
+    const CSLJsonParser = (await import("./CSLJsonParser")).default; // eslint-disable-line import/no-unresolved
     const parser = new CSLJsonParser(content, { logErrors });
     const [references, intext] = await parser.toBibliography({ style, locale, format });
 
@@ -309,9 +309,9 @@ async function formatBibliography(
 /**
  * Main function to execute the script.
  * Parses arguments, retrieves content, formats bibliography, and displays results.
- * @returns {Promise<boolean | undefined>} - A promise that resolves when the script completes.
+ * @returns {Promise<T>} - A promise that resolves when the script completes.
  */
-async function main(): Promise<void> {
+async function main<T>(): Promise<T> {
     if (process.argv.slice(2).length === 0 || /^-{0,2}h(elp)?$/.test(process.argv[2])) {
         process.stdout.write(HELP_MESSAGE);
         process.exit(0);
@@ -361,10 +361,14 @@ async function main(): Promise<void> {
 
     if (successful.length) {
         const bibliography = await formatBibliography(successful, { style, locale, format, showIntext, logErrors });
-        bibliography
-            ? process.stdout.write(bibliography)
-            : process.stdout.write(`${RESULT.FAIL} ${FONT.RED}Failed to format references!${FONT.RESET}\n\n`);
+        if (bibliography) {
+            process.stdout.write(bibliography);
+        } else {
+            process.stdout.write(`${RESULT.FAIL} ${FONT.RED}Failed to format references!${FONT.RESET}\n\n`);
+        }
     }
+
+    process.exit(0);
 }
 
 handleConfig();

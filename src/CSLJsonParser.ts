@@ -1,11 +1,11 @@
 import { type CSLJson, type CSLJsonResponse, type DateObject } from "./types"; // eslint-disable-line import/no-unresolved
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Citeproc from "citeproc";
-import { XMLHttpRequest } from "xmlhttprequest";
-import { JSDOM } from "jsdom";
-import { FONT, RESULT, uid } from "./common"; // eslint-disable-line import/no-unresolved
+/* eslint-disable @typescript-eslint/no-require-imports */
+const Citeproc = require("citeproc");
+const { XMLHttpRequest } = require("xmlhttprequest");
+const { JSDOM } = require("jsdom");
+const { FONT, RESULT, uid } = require("./common");
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 type Options = {
     logErrors: boolean;
@@ -70,17 +70,13 @@ class CSLJsonParser {
     /**
      * Fetches a CSL style file.
      * @param {string} style - The style identifier (e.g., "apa").
-     * @returns {string} The CSL file content.
+     * @returns {Promise<string>} The CSL file content.
      */
-    private getCslFile(style: string): string {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `https://raw.githubusercontent.com/citation-style-language/styles/master/${style}.csl`, false);
-        xhr.send(null);
-        const text = xhr.responseText;
-
-        if (text.startsWith("404:")) {
-            throw new Error(`Failed to retrieve style "${style}"`);
-        }
+    private async getStyleFile(style: string): Promise<string> {
+        const response = await fetch(
+            `https://raw.githubusercontent.com/citation-style-language/styles/master/${style}.csl`
+        );
+        const text = await response.text();
 
         return text;
     }
@@ -294,7 +290,6 @@ class CSLJsonParser {
 
             this.cslJson.push(newCslJsonObject);
             return newCslJsonObject;
-            /* eslint-disable quotes, indent */
         } catch (error) {
             if (this.options.logErrors) process.stderr.write(this.errorTemplate(error as Error));
             return { id: uid(), identifier: url, type: "URL", status: "failed" };
@@ -352,7 +347,6 @@ class CSLJsonParser {
      * @returns {Promise<CSLJsonResponse>} The response object with citation data.
      */
     public async fromPMCID(pmcid: string): Promise<CSLJsonResponse> {
-        /* eslint-disable indent */
         const pmcIdWithoutPrefix = pmcid.replace(/^PMC/, "");
 
         try {
@@ -407,7 +401,6 @@ class CSLJsonParser {
      * @returns {Promise<CSLJsonResponse>} The response object with citation data.
      */
     public async fromPMID(pmid: string): Promise<CSLJsonResponse> {
-        /* eslint-disable indent */
         try {
             const response = await fetch(
                 `${this.CORS_PROXY}https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=csl&id=${pmid}`
@@ -447,7 +440,6 @@ class CSLJsonParser {
             }
 
             return newCslJsonObject;
-            /* eslint-enable indent */
         } catch (error) {
             if (this.options.logErrors) process.stderr.write(this.errorTemplate(error as Error));
             return { id: uid(), identifier: pmid, type: "PMID", status: "failed" };
@@ -492,8 +484,8 @@ class CSLJsonParser {
                     }),
                 };
 
-                const getFormattedCitations = (): [string, string] => {
-                    const cslFile = this.getCslFile(style);
+                const getFormattedCitations = async (): Promise<[string, string]> => {
+                    const cslFile = await this.getStyleFile(style);
                     const citeproc = new Citeproc.Engine(processorFunctions, cslFile);
                     citeproc.setOutputFormat(format.toLowerCase());
                     citeproc.updateItems(itemIDs);
