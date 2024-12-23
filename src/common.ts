@@ -27,7 +27,7 @@ export const HELP_MESSAGE = `
 
         Description:
 
-          citeease-cli is a CLI tool that generates formatted citations (references) based on various
+          citeease is a CLI tool that generates formatted citations (references) based on various
           unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.
           It also allows you to manage configurations for citation style, locale, and output format.
 
@@ -39,7 +39,7 @@ export const HELP_MESSAGE = `
           --intext, -i           Include in-text citations in the output (e.g., "(Author, Year)").
           --no-intext            Exclude in-text citations from the output.
           --log-errors, -e       Enable logging of errors for debugging purposes
-          --version, -v          Display the current version of citeease-cli
+          --version, -v          Display the current version of citeease
           help                   Show help message
           config <key> [value]   Configure default settings. Keys: "style", "locale", "format", or "reset".
 
