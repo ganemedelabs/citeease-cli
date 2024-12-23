@@ -1,9 +1,9 @@
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
-import typescriptEslint from "@typescript-eslint/eslint-plugin"; // eslint-disable-line import/no-unresolved
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import _import from "eslint-plugin-import";
 import prettier from "eslint-plugin-prettier";
 import globals from "globals";
-import tsParser from "@typescript-eslint/parser"; // eslint-disable-line import/no-unresolved
+import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
@@ -54,6 +54,7 @@ export default [
             "no-unused-vars": "warn",
             "@typescript-eslint/no-var-requires": "off",
             "@typescript-eslint/ban-ts-comment": "off",
+            "import/no-unresolved": "off",
         },
     },
 ];

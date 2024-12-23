@@ -1,10 +1,10 @@
 {
-    "name": "citeease-cli",
-    "version": "1.1.4",
-    "description": "citeease-cli is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
+    "name": "citeease",
+    "version": "1.0.0",
+    "description": "citeease is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
     "private": false,
     "bin": {
-        "citeease-cli": "dist/citeease-cli.js",
+        "citeease": "dist/citeease.js",
         "cite": "dist/index.js"
     },
     "types": "dist/index.d.ts",

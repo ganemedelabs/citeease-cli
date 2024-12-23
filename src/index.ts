@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { CSLJson, type CSLJsonResponse } from "./types"; // eslint-disable-line import/no-unresolved
+import { CSLJson, type CSLJsonResponse } from "./types";
 
 import fs from "fs";
 import path from "path";
 import os from "os";
 
-import { FONT, RESULT, HELP_MESSAGE } from "./common"; // eslint-disable-line import/no-unresolved
+import { FONT, RESULT, HELP_MESSAGE } from "./common";
 
 type ParsedArguments = {
     identifiers: string[];
@@ -252,7 +252,7 @@ async function retrieveContent(
     identifiers: [IdentifierType, string][],
     logErrors: boolean
 ): Promise<CSLJsonResponse[]> {
-    const CSLJsonParser = (await import("./CSLJsonParser")).default; // eslint-disable-line import/no-unresolved
+    const CSLJsonParser = (await import("./CSLJsonParser")).default;
     const parser = new CSLJsonParser([], { logErrors });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-unused-vars
     const fetchers: Record<IdentifierType, (id: string) => Promise<any>> = {
@@ -296,7 +296,7 @@ async function formatBibliography(
     }
 ): Promise<string | null> {
     const { style, locale, format, showIntext, logErrors } = options;
-    const CSLJsonParser = (await import("./CSLJsonParser")).default; // eslint-disable-line import/no-unresolved
+    const CSLJsonParser = (await import("./CSLJsonParser")).default;
     const parser = new CSLJsonParser(content, { logErrors });
     const [references, intext] = await parser.toBibliography({ style, locale, format });
 

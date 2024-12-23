@@ -1,4 +1,4 @@
-import { type CSLJson, type CSLJsonResponse, type DateObject } from "./types"; // eslint-disable-line import/no-unresolved
+import { type CSLJson, type CSLJsonResponse, type DateObject } from "./types";
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const Citeproc = require("citeproc");
