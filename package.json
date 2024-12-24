@@ -1,6 +1,6 @@
 {
     "name": "citeease",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "description": "citeease is a CLI tool that generates formatted citations (references) based on various unique identifiers, including URL, DOI, ISBN, PMID, and PMCID.",
     "private": false,
     "bin": {
